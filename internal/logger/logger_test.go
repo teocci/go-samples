@@ -5,10 +5,10 @@ package logger
 
 import (
 	"errors"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
-	"github.com/stretchr/testify/require"
 )
 
 type Conf struct {
@@ -71,6 +71,9 @@ func TestThis(t *testing.T) {
 		require.NoError(t, err)
 	}
 
+	prefix := levelPrefix(logLevelParsed)
+	require.Equal(t, "I ", prefix)
+
 	if len(logDestinations) == 0 {
 		logDestinations = []string{"stdout"}
 	}
@@ -95,4 +98,6 @@ func TestThis(t *testing.T) {
 	if logFile == "" {
 		logFile = "logger-test.log"
 	}
+
+
 }

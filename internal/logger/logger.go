@@ -16,6 +16,10 @@ import (
 
 const prefix string = "[rtt-jinan]"
 
+const DebugString = "debug"
+const WarnString = "warn"
+const InfoString = "info"
+
 // Level is a log level.
 type Level int
 
@@ -42,20 +46,33 @@ const (
 
 // Logger is a log handler.
 type Logger struct {
-	level			Level
-	destinations	map[Destination]struct{}
+	level        Level
+	destinations map[Destination]struct{}
 
-	mutex			sync.Mutex
-	file			*os.File
-	syslog			io.WriteCloser
-	buffers			[]bytes.Buffer
+	mutex   sync.Mutex
+	file    *os.File
+	syslog  io.WriteCloser
+	buffers []bytes.Buffer
 }
+
+func GetDefaultLevelName() string {
+	return levelNames()[0]
+}
+
+func GetLevelName(level Level) string {
+	return levelNames()[level]
+}
+
+func levelNames() []string {
+	return []string{DebugString, InfoString, WarnString}
+}
+
 
 func levelColors() []string {
 	return []string{color.Debug.Code(), color.Info.Code(), color.Warn.Code()}
 }
 
-func levelColor( level Level) string {
+func levelColor(level Level) string {
 	return levelColors()[level]
 }
 
@@ -63,7 +80,7 @@ func levelPrefixes() []string {
 	return []string{"D ", "I ", "W "}
 }
 
-func levelPrefix( level Level) string {
+func levelPrefix(level Level) string {
 	return levelPrefixes()[level]
 }
 
@@ -108,6 +125,7 @@ func (lh *Logger) Close() {
 	}
 }
 
+// Cheap integer to fixed-width decimal ASCII. Give a negative width to avoid zero-padding.
 // https://golang.org/src/log/log.go#L78
 func itoa(i int, wid int) []byte {
 	// Assemble decimal in reverse order.
@@ -180,13 +198,12 @@ func (lh *Logger) getDestinationBuffer(destination Destination) bytes.Buffer {
 	return lh.buffers[destination]
 }
 
-func logEntry(buff *bytes.Buffer, level Level, doColor bool, format string, args ...interface{}){
+func logEntry(buff *bytes.Buffer, level Level, doColor bool, format string, args ...interface{}) {
 	buff.Reset()
 	writeTime(buff, doColor)
 	writeLevel(buff, level, doColor)
 	writeContent(buff, format, args)
 }
-
 
 // Log writes a log entry.
 func (lh *Logger) Log(level Level, format string, args ...interface{}) {

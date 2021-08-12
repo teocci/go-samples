@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/nacl/secretbox"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aler9/rtsp-simple-server/internal/confenv"
+	"github.com/teocci/go-samples/internal/confenv"
 	"github.com/teocci/go-samples/internal/logger"
 )
 
@@ -124,19 +124,19 @@ func Load(fpath string) (*Conf, bool, error) {
 			}
 		}
 
-		byts, err := ioutil.ReadFile(fpath)
+		fileBytes, err := ioutil.ReadFile(fpath)
 		if err != nil {
 			return true, err
 		}
 
 		if key, ok := os.LookupEnv("RTSP_CONFKEY"); ok {
-			byts, err = decrypt(key, byts)
+			fileBytes, err = decrypt(key, fileBytes)
 			if err != nil {
 				return true, err
 			}
 		}
 
-		err = yaml.Unmarshal(byts, conf)
+		err = yaml.Unmarshal(fileBytes, conf)
 		if err != nil {
 			return true, err
 		}
@@ -161,23 +161,31 @@ func Load(fpath string) (*Conf, bool, error) {
 	return conf, found, nil
 }
 
+func (conf *Conf) parseLogLevel() error {
+	switch conf.LogLevel {
+	case logger.WarnString:
+		conf.LogLevelParsed = logger.Warn
+		return nil
+	case logger.InfoString:
+		conf.LogLevelParsed = logger.Info
+		return nil
+	case logger.DebugString:
+		conf.LogLevelParsed = logger.Debug
+		return nil
+	default:
+		return fmt.Errorf("unsupported log level: %s", conf.LogLevel)
+	}
+}
+
 // CheckAndFillMissing checks the configuration for errors and fill missing fields.
 func (conf *Conf) CheckAndFillMissing() error {
 	if conf.LogLevel == "" {
-		conf.LogLevel = "info"
+		conf.LogLevel = logger.GetDefaultLevelName()
 	}
-	switch conf.LogLevel {
-	case "warn":
-		conf.LogLevelParsed = logger.Warn
 
-	case "info":
-		conf.LogLevelParsed = logger.Info
-
-	case "debug":
-		conf.LogLevelParsed = logger.Debug
-
-	default:
-		return fmt.Errorf("unsupported log level: %s", conf.LogLevel)
+	err := conf.parseLogLevel()
+	if err != nil {
+		return err
 	}
 
 	if len(conf.LogDestinations) == 0 {
