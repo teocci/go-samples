@@ -12,18 +12,17 @@ import (
 	"time"
 )
 
-const C_HYPHEN = "-"
-const C_UNDERSCORE = "_"
-const C_COMA = ","
-const C_EQUAL = "="
-
-const B_YES = "yes"
-const B_NO = "no"
-const B_TRUE = "true"
-const B_FALSE = "false"
-
-const T_YAML = "yaml"
-
+const (
+	CharHyphen     = "-"
+	CharUnderscore = "_"
+	CharComa       = ","
+	CharEqual      = "="
+	BoolYes        = "yes"
+	BoolNo         = "no"
+	BoolTrue       = "true"
+	BoolFalse      = "false"
+	TagYAML        = "yaml"
+)
 
 func load(environment map[string]string, prefix string, reflectValue reflect.Value) error {
 	reflectType := reflectValue.Type()
@@ -69,10 +68,10 @@ func load(environment map[string]string, prefix string, reflectValue reflect.Val
 	case reflect.Bool:
 		if ev, ok := environment[prefix]; ok {
 			switch strings.ToLower(ev) {
-			case B_YES, B_TRUE:
+			case BoolYes, BoolTrue:
 				reflectValue.SetBool(true)
 
-			case B_NO, B_FALSE:
+			case BoolNo, BoolFalse:
 				reflectValue.SetBool(false)
 
 			default:
@@ -85,7 +84,7 @@ func load(environment map[string]string, prefix string, reflectValue reflect.Val
 		if reflectType.Elem().Kind() == reflect.String {
 			if ev, ok := environment[prefix]; ok {
 				newValue := reflect.Zero(reflectType)
-				for _, sv := range strings.Split(ev, C_COMA) {
+				for _, sv := range strings.Split(ev, CharComa) {
 					newValue = reflect.Append(newValue, reflect.ValueOf(sv))
 				}
 				reflectValue.Set(newValue)
@@ -95,12 +94,12 @@ func load(environment map[string]string, prefix string, reflectValue reflect.Val
 
 	case reflect.Map:
 		for k := range environment {
-			mapPrefix := prefix + C_UNDERSCORE
+			mapPrefix := prefix + CharUnderscore
 			if !strings.HasPrefix(k, mapPrefix) {
 				continue
 			}
 
-			mapKey := strings.Split(k[len(mapPrefix):], C_UNDERSCORE)[0]
+			mapKey := strings.Split(k[len(mapPrefix):], CharUnderscore)[0]
 			if len(mapKey) == 0 {
 				continue
 			}
@@ -136,11 +135,11 @@ func load(environment map[string]string, prefix string, reflectValue reflect.Val
 			field := reflectType.Field(index)
 
 			// load only public fields
-			if field.Tag.Get(T_YAML) == C_HYPHEN {
+			if field.Tag.Get(TagYAML) == CharHyphen {
 				continue
 			}
 
-			newPrefix := prefix+C_UNDERSCORE+strings.ToUpper(field.Name)
+			newPrefix := prefix + CharUnderscore + strings.ToUpper(field.Name)
 			err := load(environment, newPrefix, reflectValue.Field(index))
 			if err != nil {
 				return err
@@ -156,7 +155,7 @@ func load(environment map[string]string, prefix string, reflectValue reflect.Val
 func Load(prefix string, value interface{}) error {
 	environment := make(map[string]string)
 	for _, envString := range os.Environ() {
-		envKV := strings.SplitN(envString, C_EQUAL, 2)
+		envKV := strings.SplitN(envString, CharEqual, 2)
 		environment[envKV[0]] = envKV[1]
 	}
 

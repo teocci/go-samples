@@ -13,11 +13,11 @@ import (
 
 type Conf struct {
 	// general
-	LogLevel              string                          `yaml:"logLevel" json:"logLevel"`
-	LogLevelParsed        Level                    `yaml:"-" json:"-"`
-	LogDestinations       []string                        `yaml:"logDestinations" json:"logDestinations"`
-	LogDestinationsParsed map[Destination]struct{} `yaml:"-" json:"-"`
-	LogFile               string                          `yaml:"logFile" json:"logFile"`
+	LogLevel              string					`yaml:"logLevel" json:"logLevel"`
+	LogLevelParsed        Level						`yaml:"-" json:"-"`
+	LogDestinations       []string					`yaml:"logDestinations" json:"logDestinations"`
+	LogDestinationsParsed map[Destination]struct{}	`yaml:"-" json:"-"`
+	LogFile               string                    `yaml:"logFile" json:"logFile"`
 }
 
 
@@ -98,6 +98,4 @@ func TestThis(t *testing.T) {
 	if logFile == "" {
 		logFile = "logger-test.log"
 	}
-
-
 }

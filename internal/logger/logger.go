@@ -67,7 +67,6 @@ func levelNames() []string {
 	return []string{DebugString, InfoString, WarnString}
 }
 
-
 func levelColors() []string {
 	return []string{color.Debug.Code(), color.Info.Code(), color.Warn.Code()}
 }
@@ -125,6 +124,7 @@ func (lh *Logger) Close() {
 	}
 }
 
+// itoa
 // Cheap integer to fixed-width decimal ASCII. Give a negative width to avoid zero-padding.
 // https://golang.org/src/log/log.go#L78
 func itoa(i int, wid int) []byte {

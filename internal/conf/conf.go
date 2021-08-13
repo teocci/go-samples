@@ -5,16 +5,17 @@ package conf
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/teocci/go-samples/internal/common"
 	"io/ioutil"
 	"os"
 	"time"
 
+	"github.com/teocci/go-samples/internal/confenv"
+	"github.com/teocci/go-samples/internal/logger"
+
 	"github.com/aler9/gortsplib/pkg/headers"
 	"golang.org/x/crypto/nacl/secretbox"
 	"gopkg.in/yaml.v3"
-
-	"github.com/teocci/go-samples/internal/confenv"
-	"github.com/teocci/go-samples/internal/logger"
 )
 
 // Encryption is an encryption policy.
@@ -25,16 +26,6 @@ const (
 	EncryptionNo Encryption = iota
 	EncryptionOptional
 	EncryptionStrict
-)
-
-// Protocol is a RTSP protocol
-type Protocol int
-
-// RTSP protocols.
-const (
-	ProtocolUDP Protocol = iota
-	ProtocolMulticast
-	ProtocolTCP
 )
 
 func decrypt(key string, bytes []byte) ([]byte, error) {
@@ -67,19 +58,13 @@ type Conf struct {
 	ReadTimeout           time.Duration                   `yaml:"readTimeout" json:"readTimeout"`
 	WriteTimeout          time.Duration                   `yaml:"writeTimeout" json:"writeTimeout"`
 	ReadBufferCount       int                             `yaml:"readBufferCount" json:"readBufferCount"`
-	API                   bool                            `yaml:"api" json:"api"`
-	APIAddress            string                          `yaml:"apiAddress" json:"apiAddress"`
-	Metrics               bool                            `yaml:"metrics" json:"metrics"`
-	MetricsAddress        string                          `yaml:"metricsAddress" json:"metricsAddress"`
-	PPROF                 bool                            `yaml:"pprof" json:"pprof"`
-	PPROFAddress          string                          `yaml:"pprofAddress" json:"pprofAddress"`
-	RunOnConnect          string                          `yaml:"runOnConnect" json:"runOnConnect"`
-	RunOnConnectRestart   bool                            `yaml:"runOnConnectRestart" json:"runOnConnectRestart"`
+
+	// drones
 
 	// rtsp
 	RTSPDisable       bool                  `yaml:"rtspDisable" json:"rtspDisable"`
 	Protocols         []string              `yaml:"protocols" json:"protocols"`
-	ProtocolsParsed   map[Protocol]struct{} `yaml:"-" json:"-"`
+	ProtocolsParsed   map[common.Protocol]struct{} `yaml:"-" json:"-"`
 	Encryption        string                `yaml:"encryption" json:"encryption"`
 	EncryptionParsed  Encryption            `yaml:"-" json:"-"`
 	RTSPAddress       string                `yaml:"rtspAddress" json:"rtspAddress"`
@@ -99,32 +84,24 @@ type Conf struct {
 	RTMPDisable bool   `yaml:"rtmpDisable" json:"rtmpDisable"`
 	RTMPAddress string `yaml:"rtmpAddress" json:"rtmpAddress"`
 
-	// hls
-	HLSDisable         bool          `yaml:"hlsDisable" json:"hlsDisable"`
-	HLSAddress         string        `yaml:"hlsAddress" json:"hlsAddress"`
-	HLSAlwaysRemux     bool          `yaml:"hlsAlwaysRemux" json:"hlsAlwaysRemux"`
-	HLSSegmentCount    int           `yaml:"hlsSegmentCount" json:"hlsSegmentCount"`
-	HLSSegmentDuration time.Duration `yaml:"hlsSegmentDuration" json:"hlsSegmentDuration"`
-	HLSAllowOrigin     string        `yaml:"hlsAllowOrigin" json:"hlsAllowOrigin"`
-
 	// paths
 	Paths map[string]*PathConf `yaml:"paths" json:"paths"`
 }
 
 // Load loads a Conf.
-func Load(fpath string) (*Conf, bool, error) {
+func Load(filePath string) (*Conf, bool, error) {
 	conf := &Conf{}
 
 	// read from file
 	found, err := func() (bool, error) {
 		// rtsp-simple-server.yml is optional
-		if fpath == "rtsp-simple-server.yml" {
-			if _, err := os.Stat(fpath); err != nil {
+		if filePath == "app-receiver.yml" {
+			if _, err := os.Stat(filePath); err != nil {
 				return false, nil
 			}
 		}
 
-		fileBytes, err := ioutil.ReadFile(fpath)
+		fileBytes, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			return true, err
 		}
@@ -209,7 +186,7 @@ func (conf *Conf) CheckAndFillMissing() error {
 	}
 
 	if conf.LogFile == "" {
-		conf.LogFile = "rtsp-simple-server.log"
+		conf.LogFile = "app-receiver.log"
 	}
 	if conf.ReadTimeout == 0 {
 		conf.ReadTimeout = 10 * time.Second
@@ -324,19 +301,6 @@ func (conf *Conf) CheckAndFillMissing() error {
 
 	if conf.RTMPAddress == "" {
 		conf.RTMPAddress = ":1935"
-	}
-
-	if conf.HLSAddress == "" {
-		conf.HLSAddress = ":8888"
-	}
-	if conf.HLSSegmentCount == 0 {
-		conf.HLSSegmentCount = 5
-	}
-	if conf.HLSSegmentDuration == 0 {
-		conf.HLSSegmentDuration = 1 * time.Second
-	}
-	if conf.HLSAllowOrigin == "" {
-		conf.HLSAllowOrigin = "*"
 	}
 
 	if len(conf.Paths) == 0 {

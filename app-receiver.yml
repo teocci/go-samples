@@ -1,0 +1,54 @@
+##################
+# General parameters
+
+# sets the verbosity of the program; available values are "warn", "info", "debug".
+logLevel: debug
+# destinations of log messages; available values are "stdout", "file" and "syslog".
+logDestinations: [stdout]
+# if "file" is in logDestinations, this is the file which will receive the logs.
+logFile: jinan-receiver.log
+
+# timeout of read operations.
+readTimeout: 10s
+# timeout of write operations.
+writeTimeout: 10s
+# number of read buffers.
+# a higher number allows a higher throughput,
+# a lower number allows to save RAM.
+readBufferCount: 512
+
+##################
+# List of drones
+drones:
+  - id: drone-00
+    name: Drone Number 1
+    services:
+      - telemetry:
+        # disable support for telemetry protocol.
+        telemetryDisable: no
+        protocol: tcp
+        mavlinkVersion: 3
+        host: 106.244.179.242
+        port: 20102
+      - stream:
+        # disable support for the RTSP protocol.
+        rtspDisable: no
+        protocol: tcp
+        host: 106.244.179.242
+        port: 8554
+  - id: drone-01
+    name: Drone Number 2
+    services:
+      - telemetry:
+        # disable support for telemetry protocol.
+        telemetryDisable: no
+        protocol: tcp
+        mavlinkVersion: 3
+        host: 106.244.179.242
+        port: 20102
+      - stream:
+        # disable support for the RTSP protocol.
+        rtspDisable: no
+        protocol: tcp
+        host: 106.244.179.242
+        port: 8554
