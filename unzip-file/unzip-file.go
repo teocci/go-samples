@@ -84,9 +84,7 @@ func closeZipReader() func(r *zip.ReadCloser) {
 	}
 }
 
-
 func main() {
-
 	files, err := Unzip("01.data.zip", "./tmp/output-folder")
 	if err != nil {
 		log.Fatal(err)
