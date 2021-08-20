@@ -42,8 +42,6 @@ func initProcess() {
 
 	r := csv.NewReader(f)
 
-	onlyHeader := true
-
 	for {
 		rec, err := r.Read()
 		if err != nil {
@@ -53,10 +51,7 @@ func initProcess() {
 			}
 			log.Fatal(err) // sorry for the panic
 		}
-		if onlyHeader {
-			process(rec, onlyHeader)
-			onlyHeader = false
-		}
+		process(rec, true)
 	}
 }
 
@@ -123,7 +118,7 @@ func savePartitions() {
 	}
 }
 
-func waitTilEnd() func () {
+func waitTilEnd() func() {
 	return func() {
 		wg.Wait()
 		fmt.Println("File processed.")
