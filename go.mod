@@ -11,6 +11,8 @@ require (
 	github.com/jackc/pgtype v1.8.1 // indirect
 	github.com/jackc/pgx/v4 v4.13.0 // indirect
 	github.com/jszwec/csvutil v1.5.0 // indirect
+	github.com/karrick/godirwalk v1.16.1 // indirect
+	github.com/karrick/golf v1.4.0 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/yunabe/easycsv v0.0.2 // indirect

@@ -27,7 +27,6 @@ type A struct {
 }
 
 func BenchmarkUnmarshal(b *testing.B) {
-
 	fixture := []struct {
 		desc    string
 		records int
