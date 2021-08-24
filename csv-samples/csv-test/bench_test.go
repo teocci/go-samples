@@ -108,14 +108,19 @@ func BenchmarkUnmarshal(b *testing.B) {
 func genData(records int) []byte {
 	header := []string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"}
 	record := []string{"1", "2.5", "foo", "6", "7", "8", "9", "10", "bar", "10"}
-
+	var err error
 	var buf bytes.Buffer
 	w := csv.NewWriter(&buf)
-	w.Write(header)
+	if err = w.Write(header); err != nil {
+		panic(err)
+	}
 
 	for i := 0; i < records; i++ {
-		w.Write(record)
+		if err = w.Write(record); err != nil {
+			panic(err)
+		}
 	}
+
 	w.Flush()
 	if err := w.Error(); err != nil {
 		panic(err)
