@@ -27,7 +27,7 @@ drones:
         # disable support for telemetry protocol.
         telemetryDisable: no
         protocol: tcp
-        mavlinkVersion: 3
+        mavlinkVersion: 2
         host: 106.244.179.242
         port: 20102
       - stream:
@@ -43,7 +43,7 @@ drones:
         # disable support for telemetry protocol.
         telemetryDisable: no
         protocol: tcp
-        mavlinkVersion: 3
+        mavlinkVersion: 2
         host: 106.244.179.242
         port: 20102
       - stream:
