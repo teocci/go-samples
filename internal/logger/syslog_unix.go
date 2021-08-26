@@ -1,7 +1,7 @@
 // Package logger
 // Created by RTT.
 // Author: teocci@yandex.com on 2021-Aug-11
-
+//go:build !windows && !plan9 && !nacl
 // +build !windows,!plan9,!nacl
 
 package logger
