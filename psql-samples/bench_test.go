@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"encoding/binary"
 	"fmt"
-	"github.com/teocci/go-samples/psql-samples/raw"
 	"strconv"
 	"sync"
 	"testing"
@@ -22,6 +21,7 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/teocci/go-samples/psql-samples/raw"
 )
 
 const jinanBenchConfig = "user=jinan password=jinan#db host=localhost port=5432 dbname=test_db sslmode=disable"
@@ -1237,9 +1237,6 @@ func benchmarkSelectNoBatch3Query(b *testing.B, stmt *sql.Stmt) {
 		}
 	}
 }
-
-
-
 
 
 func BenchmarkSelectLargeTextString(b *testing.B) {
