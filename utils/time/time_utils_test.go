@@ -19,7 +19,7 @@ func BenchmarkDiv(b *testing.B) {
 	var ms int64
 	ms = 1542810446506
 	for n := 0; n < b.N; n++ {
-		time.Unix(ms/msInSeconds, (ms%msInSeconds)*nsInSeconds)
+		time.Unix(ms/msInSec, (ms%msInSec)*nsInMS)
 	}
 }
 
